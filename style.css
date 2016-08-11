@@ -1,0 +1,151 @@
+/* CodeMirror */
+.clear{
+	clear: both;
+}
+.wrap{
+	margin-bottom: 2em;
+}
+    	.CodeMirror {
+        	border: 1px solid black;
+        }
+        iframe {
+        	width: 100%;
+        	height: 100%;
+        	border: 1px solid black;
+        	border-left: 0px;
+        }
+      
+      .left{
+	      float: left;
+	      width: 50%;
+	      padding:0;
+	      clear: both;
+      }
+      
+      #previewDiv{
+      	float: left;
+      	width: 49%;
+      	height: 601px;
+      }
+      
+      span.CodeMirror-matchhighlight{
+      	background: #e9e9e9
+      }
+      
+      .CodeMirror-focused span.CodeMirror-matchhighlight{
+      	background: #e7e4ff !important;
+      }
+      
+      .activeline{
+      	background: #e8f2ff !important;
+      }
+
+.CodeMirror-scroll{
+	height: 601px;
+}
+/* Code Mirror End */
+
+
+#navi ul li, #navEditor ul li, #navEditorPreview ul li{
+	display: inline-block;
+	cursor: pointer;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid black;
+	padding: 0.5em;
+}
+
+.active{
+	color: #fff;
+	background-color: #666;
+}
+
+#login{
+	width: 400px;
+	margin: 0 auto;
+	margin-top: 4em;
+}
+
+#login input[type="text"], #login input[type="password"]{
+	width: 20em;
+}
+
+#password{
+	margin-bottom: 2em;
+}
+
+#login button{
+	margin-top: 2em;
+}
+
+body{
+	font-family: Droid Sans, Arial, sans-serif;
+	line-height: 1.5;
+	max-width: 64.3em;
+	margin: 3em auto;
+	padding: 0 1em;
+}
+
+h1{
+	font-size: 1.4em;
+	letter-spacing: normal;
+}
+
+#content{
+	border: 1px solid black;
+	padding: 1em;
+}
+
+#navi ul{
+	padding:0;
+	margin: 0;
+}
+
+li:hover{
+	color: #fff;
+	background-color: #666;
+}
+
+#allLektionen li{
+	cursor: pointer;
+	list-style: none;
+	
+	border: 1px solid black;
+	width: 300px;
+	padding: 0.5em;
+	margin-bottom: 0.2em;
+	padding-left: 2em;
+}
+
+.saved{
+	background: url("img/68-paperclip.png") no-repeat 0.5em 0.5em;
+}
+
+#navi button{
+	margin-left: 1em;
+}
+
+#console{
+	float: right;
+	margin-top: 0.5em;
+}
+
+.error{
+	color: red;
+}
+
+.ok{
+	color: green;
+}
+
+#coding h2{
+	float: left;
+}
+
+.richtig1{
+	background-color: #bcffc1;
+}
+
+.richtig0{
+	background-color: #ffc7c7;
+}

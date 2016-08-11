@@ -1,0 +1,303 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Einführung Interaktive Medien</title>
+		<link rel="stylesheet" href="codemirror/lib/codemirror.css" type="text/css" />
+		<link rel="stylesheet" href="codemirror/doc/docs.css" type="text/css" />
+		<link href="style.css" rel="stylesheet" type="text/css" />
+		
+		<script src="js/jquery.js"></script>
+		<script src="js/script.js"></script>
+
+		<script src="codemirror/lib/codemirror.js"></script>
+		<script src="codemirror/lib/util/searchcursor.js"></script>
+		<script src="codemirror/lib/util/match-highlighter.js"></script>
+		<script src="codemirror/lib/util/closetag.js"></script>
+		<script src="codemirror/mode/xml/xml.js"></script>
+		<script src="codemirror/mode/javascript/javascript.js"></script>
+		<script src="codemirror/mode/css/css.js"></script>
+		<script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+		
+		<script>
+			if(!isReady()){
+				alert("Diese Website sollte nur mit modernen Browsern genutzt werden - z.B. Firefox ab Version 2.0, IE ab Version 8, Safari ab Version 4.0, Chrome ab Version 4.0.");
+			}else{
+				if(!isLoggedIn()){
+					changeToLogin();
+				}	
+			}
+	
+			/* TODO:
+				* Design
+				* CSS Classe für gespeichert
+	
+				*/
+			// alle Lektionen in Objekt definiert
+			var lektionObj = {
+				lektionen : [{
+					nummer : 1,
+					titel : "1) Mit HTML starten"	
+				},{
+					nummer : 2,
+					titel : "2) Überschriften, Links & Bilder"	
+				},{
+					nummer : 3,
+					titel : "3) Listen"
+				},{
+					nummer : 4,
+					titel : "4) Challenge 1"	
+				},{
+					nummer : 5,
+					titel : "5) Inline-Styling mit CSS"
+				},{
+					nummer : 6,
+					titel : "6) Styling mit Internal Style Sheet"
+				},{
+					nummer : 7,
+					titel : "7) Box Modell"
+				},{
+					nummer : 8,
+					titel : "8) Challenge 2"					
+				},{
+					nummer : 9,
+					titel : "9) Box-Inhalt"					
+				},{
+					nummer : 10,
+					titel : "10) Positionierung"
+				},{
+					nummer: 11,
+					titel : "11) Challenge 3"
+				}]
+			};
+			
+			// Wenn DOM ready
+			$(document).ready(function() {
+				checkHash();
+				$("#console").hide();
+				
+				// Schau ob admin
+				var user = JSON.parse(localStorage.getItem("user"));
+				if(user.matrikelnummer == "admin"){
+					$("#administration").show();
+				}
+				// Zeige Usernamen an
+				$("#username").append(user.name);
+				
+				// Alle Lektionen anzeigen --> TODO: Icon, wenn von User schon bearbeitet
+				updateLektionenList(user);
+				
+				// onclick für Nav
+				$("#navi li").click(function() {
+					//console.log("click navi li");
+					//console.log(this.id);
+
+						switch(this.id){
+							case "lektion":
+								//console.log("click lektion");
+								$("#allLektionen").show();
+								location.hash = "lektion";
+								$("#coding").hide();
+								$("#admin").hide();
+							
+								$("#saveButton").hide();
+								$("#resetButton").hide();
+								$("#content h1").hide();
+								//TODO update LektionsList --> css class für gespeicherte
+
+							break;
+							case "administration":
+								$("#allLektionen").hide();
+								$("#coding").hide();
+								$("#admin").show();
+								location.hash = "administration";
+							
+								$("#saveButton").hide();
+								$("#resetButton").hide();
+								$("#content h1").hide();
+								
+							break;
+						}
+					
+						$("#navi li").removeClass("active");
+						$(this).addClass("active");
+
+				});
+				
+				
+				
+				// onclick für allLektionen
+				$("#allLektionen li").click(function(){
+					var clickedItemId = this.id;
+					$("#allLektionen").hide();
+					$("#content h1").hide();
+					$("#coding").show();
+					location.hash = "coding";
+					$("#saveButton").show();
+					$("#resetButton").show();
+					
+					// Hole Daten zur Lektion aus DB && Insert Lektion in DB für Matrikelnummer (wenn nicht admin) && Update localStorage UserObjekt mit Lektion
+					getLektion(splitLektion(clickedItemId));
+					
+					localStorage.setItem("aktLektion", clickedItemId);
+					$("#navEditor li").removeClass("active");
+					$("#liHTML").addClass("active");
+				});
+				
+			
+				$("#navEditor li").click(function(){
+					switch(this.id){
+						case "liHTML":
+							$("#editorHTML").show();
+							$("#editorCSS").hide();
+						break;
+						case "liCSS":
+							$("#editorHTML").hide();
+							$("#editorCSS").show();
+							
+							setCode("css", localStorage.getItem("aktLektion"));
+						break;
+					}
+					
+					$("#navEditor li").removeClass("active");
+					$(this).addClass("active");
+				});
+			});
+
+		</script>
+	</head>
+	<body>
+		<div class="wrap">
+			<div id="navi">
+				<p>Hallo, <span id="username"></span>!<button onclick="logout()">logout</button></p>
+				<ul>
+					<li id="lektion">Lektionen				
+					</li>
+					<!--<li id="administration" style="display:none;">Administration</li>-->
+				</ul>
+			</div>
+			<div id="content">
+				<h1>
+				Herzlich Willkommen im Übungsportal zur Lehrveranstaltung Einführung Interaktive Medien.
+				</h1>
+				<button id="saveButton" onclick="saveLektion()" style="display:none;">Lektion speichern</button>
+				<button id="resetButton" onclick="resetLektion()" style="display:none;">Code zurücksetzen</button>
+				
+				<div id="allLektionen" style="display:none;">
+					<h2></h2>
+					<ul>
+					</ul>
+				</div>
+				<div id="admin" style="display:none;">
+					<h2>Administration</h2>
+
+				</div>
+				<div id="coding" style="display:none;">
+					<h2></h2>
+					<h3 id="console"></h3>
+					<div class="left">
+						<div id="navEditor">
+							<ul>
+								<li id="liHTML">HTML</li>
+								
+							</ul>
+						</div>
+						<div id="editorHTML">
+							<textarea id="code" name="code"></textarea>
+						</div>
+						<div id="editorCSS" style="display:none;">
+							<textarea id="codeCSS" name="codeCSS"></textarea>
+						</div>
+					</div>
+					<div id="previewDiv">
+						<div id="navEditorPreview">
+							<ul>
+								<li id="liVorschau">Vorschau</li>
+							</ul>
+						</div>
+						<iframe id="preview"></iframe>
+					</div>
+    <!-- Script -->
+    <script>
+    
+    var delay;
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: 'text/html',
+        tabMode: 'indent',
+        onChange: function() {
+          clearTimeout(delay);
+          delay = setTimeout(updatePreview, 300);
+        },
+        lineNumbers: true,
+        lineWrapping: true,
+        onCursorActivity: function() {
+	        editor.matchHighlight("CodeMirror-matchhighlight");
+	        editor.setLineClass(hlLine, null, null);
+	        hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+	    },
+	    /*extraKeys: {
+			"'>'": function(cm) { cm.closeTag(cm, '>'); },
+			"'/'": function(cm) { cm.closeTag(cm, '/'); }
+		},*/
+		wordWrap: true
+      });
+      
+      var hlLine = editor.setLineClass(0, "activeline");
+
+      function updatePreview() {
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        var codeHTML = editor.getValue();
+        
+        // Check codeHTML auf <title>-Tag und ersetze Text Vorschau
+        var splitTitle1 = codeHTML.split("<title>");
+        if(splitTitle1[1]){
+	        
+	        var splitTitle2 = splitTitle1[1].split("</title>");
+	        var title = $.trim(splitTitle2[0]);
+	        if(title.length == 0){
+		        title = "Vorschau";
+	        }
+	        $("#liVorschau").html(title);
+        }else{
+	        $("#liVorschau").html("Vorschau");
+        }
+        
+        
+        
+        var codeCSS = editorCSS.getValue();
+        var split = codeHTML.split("<head>");
+        var code = split[0] + "<style>" + codeCSS + "</style>" + split[1];
+        preview.open();
+        preview.write(code);
+        preview.close();
+      }
+      setTimeout(updatePreview, 300);
+      
+      var delay2;
+      var editorCSS = CodeMirror.fromTextArea(document.getElementById('codeCSS'),{
+      	mode:'text/css',
+	      tabMode: 'indent',
+	      onChange: function(){
+		      clearTimeout(delay2);
+		      delay2 = setTimeout(updatePreview, 300);
+	      },
+	      lineNumbers: true,
+	      lineWrapping: true,
+	      onCursorActivity: function(){
+		      editorCSS.matchHighlight("CodeMirror-matchhighlight");
+		      editorCSS.setLineClass(hlLine2, null, null);
+		      hlLine2 = editorCSS.setLineClass(editorCSS.getCursor().line, null, "activeline");
+	      },
+      });
+      
+      var hlLine2 = editorCSS.setLineClass(0, "activeline");
+      </script>
+      				<div class="clear"></div>
+				</div>
+				
+			</div>
+		</div>
+	</body>
+</html>

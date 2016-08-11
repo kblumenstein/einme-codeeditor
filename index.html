@@ -1,0 +1,55 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Einführung Interaktive Medien</title>
+		<script src="js/jquery.js"></script>
+		<script src="js/script.js"></script>
+		<link href="style.css" rel="stylesheet" type="text/css" />
+		
+		<script>
+			if(!isReady()){
+				alert("Diese Website sollte nur mit modernen Browsern genutzt werden - z.B. Firefox ab Version 2.0, IE ab Version 8, Safari ab Version 4.0, Chrome ab Version 4.0.");
+			}else{
+				if(isLoggedIn()){
+					changeToPortal();
+				}
+			}
+			
+			// Wenn DOM ready
+			$(document).ready(function() {
+				if(location.host === "localhost"){
+					$("#loginIntern").attr("checked", "checked");
+				}else{
+					$("#loginLdap").attr("checked", "checked");
+				}
+				
+				$("#password").keyup(function(event){
+					if(event.keyCode == 13){
+						$("#btnLogin").click();
+					}
+				});
+			});
+		</script>
+	</head>
+	<body>
+		<div class="wrap">
+			<div id="login">
+				<h1>Login zum Übungsportal für Einführung Interaktive Medien</h1>
+				<label for="username">Matrikelnummer</label>
+				<input name="username" id="username" placeholder="Matrikelnummer eintragen" type="text" />
+				<br/>
+				<label for="password">Passwort</label>
+				<input name="password" id="password" placeholder="Passwort eintragen" type="password" />
+				<br/>
+				<label for="loginOption">Login erfolgt über:</label>
+				<br/>
+				<input type="radio" id="loginLdap" name="loginOption" value="ldap"> FH-Login<br/>
+				<input type="radio" id="loginIntern" name="loginOption" value="intern"> Website intern<br />			
+				
+				<button id="btnLogin" onclick="login()">Einloggen</button>
+				
+			</div>
+		</div>
+	</body>
+</html>

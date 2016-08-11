@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Einführung Interaktive Medien</title>
+    <link rel="stylesheet" href="codemirror/lib/codemirror.css" type="text/css" />
+    <link rel="stylesheet" href="codemirror/doc/docs.css" type="text/css" />
+    
+    <script src="codemirror/lib/codemirror.js"></script>
+    <script src="codemirror/lib/util/searchcursor.js"></script>
+    <script src="codemirror/lib/util/match-highlighter.js"></script>
+    <script src="codemirror/lib/util/closetag.js"></script>
+    <script src="codemirror/mode/xml/xml.js"></script>
+    <script src="codemirror/mode/javascript/javascript.js"></script>
+    <script src="codemirror/mode/css/css.js"></script>
+    <script src="codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
+    <style type="text/css" >
+    	.clear{
+	    	clear: both;
+    	}
+    	.wrap{
+	    	margin-bottom: 2em;
+    	}
+    	.CodeMirror {
+        	border: 1px solid black;
+        }
+        iframe {
+        	width: 100%;
+        	height: 100%;
+        	border: 1px solid black;
+        	border-left: 0px;
+        }
+      
+      .left{
+	      float: left;
+	      width: 50%;
+	      padding:0;
+      }
+      
+      #previewDiv{
+      	float: left;
+      	width: 49%;
+      	height: 601px;
+      }
+      
+      #editorCSS .CodeMirror{
+	      border-top: none;
+      }
+      
+      span.CodeMirror-matchhighlight{
+      	background: #e9e9e9
+      }
+      
+      .CodeMirror-focused span.CodeMirror-matchhighlight{
+      	background: #e7e4ff !important;
+      }
+      
+      .activeline{
+      	background: #e8f2ff !important;
+      }
+    </style>
+    
+  </head>
+  <body>
+  	<div class="wrap">
+  		<h1>HTML Grundlagen</h1>
+  		<div class="left">
+	  		<div id="editorHTML">
+		  		<textarea id="code" name="code"><!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>HTML5 canvas demo</title>
+  </head>
+  <body>
+  	
+    <p>Canvas pane goes here:</p>
+    <canvas id="pane" width="300" height="200"></canvas>
+    <script>
+      var canvas = document.getElementById('pane');
+      var context = canvas.getContext('2d');
+
+      context.fillStyle = 'rgb(250,0,0)';
+      context.fillRect(10, 10, 55, 50);
+
+      context.fillStyle = 'rgba(0, 0, 250, 0.5)';
+      context.fillRect(30, 30, 55, 50);
+    </script>
+  </body>
+</html></textarea>
+			</div>
+			<div id="editorCSS">
+				<textarea id="codeCSS" name="codeCSS">body{
+	background:lightblue;
+}
+p{
+	font-family: Arial;
+}</textarea>
+			</div>
+		</div>
+		<div id="previewDiv">
+			<iframe id="preview"></iframe>
+		</div>
+    <!-- Script -->
+    <script>
+    
+    var delay;
+      // Initialize CodeMirror editor with a nice html5 canvas demo.
+      var editor = CodeMirror.fromTextArea(document.getElementById('code'), {
+        mode: 'text/html',
+        tabMode: 'indent',
+        onChange: function() {
+          clearTimeout(delay);
+          delay = setTimeout(updatePreview, 300);
+        },
+        lineNumbers: true,
+        lineWrapping: true,
+        onCursorActivity: function() {
+	        editor.matchHighlight("CodeMirror-matchhighlight");
+	        editor.setLineClass(hlLine, null, null);
+	        hlLine = editor.setLineClass(editor.getCursor().line, null, "activeline");
+	    },
+	    extraKeys: {
+			"'>'": function(cm) { cm.closeTag(cm, '>'); },
+			"'/'": function(cm) { cm.closeTag(cm, '/'); }
+		},
+		wordWrap: true
+      });
+      
+      var hlLine = editor.setLineClass(0, "activeline");
+
+      function updatePreview() {
+        var previewFrame = document.getElementById('preview');
+        var preview =  previewFrame.contentDocument ||  previewFrame.contentWindow.document;
+        var codeHTML = editor.getValue();
+        var codeCSS = editorCSS.getValue();
+        var split = codeHTML.split("<head>");
+        var code = split[0] + "<style>" + codeCSS + "</style>" + split[1];
+        preview.open();
+        preview.write(code);
+        preview.close();
+      }
+      setTimeout(updatePreview, 300);
+      
+      var delay2;
+      var editorCSS = CodeMirror.fromTextArea(document.getElementById('codeCSS'),{
+      	mode:'text/css',
+	      tabMode: 'indent',
+	      onChange: function(){
+		      clearTimeout(delay2);
+		      delay2 = setTimeout(updatePreview, 300);
+	      },
+	      lineNumbers: true,
+	      lineWrapping: true,
+	      onCursorActivity: function(){
+		      editorCSS.matchHighlight("CodeMirror-matchhighlight");
+		      editorCSS.setLineClass(hlLine2, null, null);
+		      hlLine2 = editorCSS.setLineClass(editorCSS.getCursor().line, null, "activeline");
+	      },
+      });
+      
+      var hlLine2 = editorCSS.setLineClass(0, "activeline");
+      </script>
+      	<div class="clear"></div>
+      </div>
+  </body>
+</html>
